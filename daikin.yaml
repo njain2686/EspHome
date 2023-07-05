@@ -1,0 +1,90 @@
+esphome:
+  name: daikin
+
+esp8266:
+  board: esp01_1m
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "4iSmxfWXHjNwFufNlKJsVyopTdeKveFLy9mFpioh1fE="
+
+ota:
+  password: "ac34e6800219dd987e6400e3308a4078"
+
+wifi:
+  ssid: "Nitin"
+  password: "trishagaurvi"
+  fast_connect: true
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Daikin Fallback Hotspot"
+    password: "123456789"
+
+captive_portal:
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: ESP IP Address
+    ssid:
+      name: ESP Connected SSID
+    bssid:
+      name: ESP Connected BSSID
+    mac_address:
+      name: ESP Mac Wifi Address
+   
+
+
+# https://esphome.io/components/status_led.html
+status_led:
+  pin: 4
+
+# https://esphome.io/components/remote_receiver.html
+remote_receiver:
+  id: rcvr
+  pin:
+    number: 5
+    mode: INPUT_PULLUP
+    inverted: True
+
+# https://www.esphome.io/components/remote_transmitter.html
+remote_transmitter:
+  id: tamtr
+  pin: 14
+  carrier_duty_percent: 50%
+
+# https://esphome.io/components/climate/ir_climate.html
+climate:
+  - platform: daikin
+    id: ac
+    name: AC'
+    receiver_id: rcvr
+    supports_heat: false
+    transmitter_id: tamtr
+    sensor: current_temperature
+
+sensor:
+  # The Bedroom Temperature entity from Home Assistant
+  - platform: homeassistant
+    name: current_temperature
+    entity_id: sensor.bedroom_temperature
+    id: current_temperature
+    
+
+switch:
+  - platform: template
+    name: 'AC Preset'
+    id: ac_preset
+    icon: mdi:cached
+    turn_on_action:
+      - climate.control:
+          id: ac
+          mode: COOL
+          target_temperature: 26°C
+          fan_mode: AUTO
+          swing_mode: VERTICAL
+    
