@@ -1,0 +1,19 @@
+alias: Outdoor Sensor notification
+description: ""
+trigger:
+  - platform: state
+    entity_id:
+      - binary_sensor.outdoor_sensor
+    from: null
+    to: "on"
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+condition: []
+action:
+  - service: notify.mobile_app_nitins_iphone
+    data:
+      message: "    \"The Outdoor Temperature is {{ states('sensor.outdoor_sensor_outdoor_temperature') }} C And Humidity is {{ states('sensor.outdoor_sensor_outdoor_humidity') }}%\""
+      title: Outdoor Sensor
+mode: single
