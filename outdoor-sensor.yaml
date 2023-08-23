@@ -75,7 +75,7 @@ sensor:
     pin: 3
     update_interval: 60s
     filters:
-      - multiply: 5.3
+      - multiply: 4.82435597
   - platform: template
     id: sys_esp_temperature
     name: ESP Temperature
