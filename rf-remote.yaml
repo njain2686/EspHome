@@ -1,0 +1,75 @@
+esphome:
+  name: rf-remote
+  friendly_name: rf-remote
+
+esp8266:
+  board: esp01_1m
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid2
+  password: !secret wifi_password2
+  manual_ip:
+   static_ip: 192.168.200.40
+   gateway: 192.168.200.1
+   subnet: 255.255.255.0
+   dns1: 192.168.200.1
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Rf-Remote Fallback Hotspot"
+
+captive_portal:
+    
+
+remote_receiver:
+  pin: GPIO13
+  dump:
+    - rc_switch
+  tolerance: 50%
+  filter: 250us
+  idle: 4ms
+  buffer_size: 2kb
+
+remote_transmitter:
+  pin: GPIO2
+  carrier_duty_percent: 50%
+
+switch:
+  - platform: template
+    name: fan-on
+    optimistic: true
+    turn_on_action:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '00010100110100000110111000101000'
+          protocol: 1
+          repeat:
+            times: 10
+            wait_time: 0s
+    turn_off_action:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '00010100110100000110011001100100'
+          protocol: 1
+          repeat:
+            times: 10
+            wait_time: 0s
+
+  #- platform: template
+  #  name: fan-off
+  #  optimistic: true
+  #  turn_on_action:
+  #    - remote_transmitter.transmit_rc_switch_raw:
+  #        code: '00010100110100000110011001100100'
+  #        protocol: 1
+  #        repeat:
+  #          times: 10
+  #          wait_time: 0s
